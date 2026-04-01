@@ -1,0 +1,19 @@
+Admin : admin@photoforyou.fr / admin1234
+Photographe : flippo@photoforyou.fr / photo1234
+Client : marie@example.com / client1234 (20 crédits)
+
+/**
+
+commande pour gerer les triggers
+
+***rajoute des triggers et une logique de securisation coté serveur ***adaptée au contexte et aux besoins actuels du site web
+
+**verifier toute la logique de base de donnees pour que tout fonctionne. 
+
+** humaniser (niveau BTS)
+
+** php doc
+
+** idées d'application JAVA/Mobile à rattacher au projet
+
+**/
