@@ -45,14 +45,12 @@ class Photo extends Model
         'est_validee', 'en_vente', 'date_depot',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'est_validee' => 'boolean',
-            'en_vente'    => 'boolean',
-            'date_depot'  => 'datetime',
-        ];
-    }
+    // Conversions automatiques des colonnes au bon type PHP
+    protected $casts = [
+        'est_validee' => 'boolean',  // 0/1 en base → true/false en PHP
+        'en_vente'    => 'boolean',
+        'date_depot'  => 'datetime', // chaîne SQL → objet Carbon (dates PHP)
+    ];
 
     /**
      * Le photographe qui a déposé cette photo.

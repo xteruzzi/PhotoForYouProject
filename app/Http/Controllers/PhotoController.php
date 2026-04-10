@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse; // type de réponse pour l'envoi d'un fichier
 
 /**
  * Contrôleur PhotoController
@@ -168,7 +168,9 @@ class PhotoController extends Controller
             );
         }
 
-        // Transaction atomique : tout réussit ou tout est annulé
+        // Transaction atomique : toutes les opérations ci-dessous forment un bloc.
+        // Si une seule échoue (ex: erreur BDD), TOUTES sont annulées (rollback).
+        // Le "use ($client, $photo)" permet d'utiliser ces variables à l'intérieur.
         DB::transaction(function () use ($client, $photo) {
             $creditsPhotographe = $photo->prix * 0.5;
 

@@ -39,14 +39,12 @@ class User extends Authenticatable
 
     protected $hidden = ['password', 'remember_token'];
 
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
-            'actif'    => 'boolean',
-            'credits'  => 'float',
-        ];
-    }
+    // Conversions automatiques des colonnes au bon type PHP
+    protected $casts = [
+        'password' => 'hashed',   // le mot de passe est toujours hashé automatiquement
+        'actif'    => 'boolean',  // 0/1 en base → true/false en PHP
+        'credits'  => 'float',    // nombre décimal
+    ];
 
     /**
      * Les photos déposées par cet utilisateur (role = photographe).

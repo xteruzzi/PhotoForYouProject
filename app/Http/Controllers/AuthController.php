@@ -30,6 +30,7 @@ class AuthController extends Controller
      *
      * @return View|RedirectResponse
      */
+    // "View|RedirectResponse" signifie : la méthode retourne soit une vue, soit une redirection
     public function showLogin(): View|RedirectResponse
     {
         if (Auth::check()) {
@@ -85,6 +86,7 @@ class AuthController extends Controller
      *
      * @return View|RedirectResponse
      */
+    // Même principe : soit on affiche le formulaire, soit on redirige si déjà connecté
     public function showRegister(): View|RedirectResponse
     {
         if (Auth::check()) {
@@ -175,10 +177,15 @@ class AuthController extends Controller
      */
     private function redirectByRole(): RedirectResponse
     {
-        return match (Auth::user()->role) {
-            'admin'       => redirect()->route('admin.dashboard'),
-            'photographe' => redirect()->route('photographe.dashboard'),
-            default       => redirect()->route('client.dashboard'),
-        };
+        $role = Auth::user()->role;
+
+        if ($role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($role === 'photographe') {
+            return redirect()->route('photographe.dashboard');
+        } else {
+            // client (rôle par défaut)
+            return redirect()->route('client.dashboard');
+        }
     }
 }

@@ -32,7 +32,10 @@ class CheckRole
      *
      * @param  Request  $request  La requête HTTP entrante
      * @param  Closure  $next     Le prochain middleware ou contrôleur
-     * @param  string   ...$roles Les rôles autorisés pour cette route
+     * @param  string   ...$roles Les rôles autorisés pour cette route.
+     *                            Le "..." signifie qu'on peut passer plusieurs rôles :
+     *                            middleware('role:client')  → $roles = ['client']
+     *                            middleware('role:admin,photographe') → $roles = ['admin', 'photographe']
      * @return Response
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
