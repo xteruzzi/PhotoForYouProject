@@ -4,7 +4,7 @@ Client : marie@example.com / client1234 (20 crédits)
 
 /**
 
-commande pour gerer les triggers
+commande pour gérer les triggers
 
 ***rajoute des triggers et une logique de securisation coté serveur ***adaptée au contexte et aux besoins actuels du site web
 
