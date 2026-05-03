@@ -80,9 +80,13 @@ class AdminController extends Controller
         $user->actif = !$user->actif;
         $user->save();
 
-        $msg = $user->actif
-            ? 'Compte activé. L\'utilisateur peut de nouveau se connecter.'
-            : 'Compte mis en stand-by. L\'utilisateur ne peut plus se connecter.';
+        if ($user->actif) {
+            LogActivite::enregistrer('activation_compte', 'Compte activé : ' . $user->pseudo . ' (rôle : ' . $user->role . ')');
+            $msg = 'Compte activé. L\'utilisateur peut de nouveau se connecter.';
+        } else {
+            LogActivite::enregistrer('desactivation_compte', 'Compte désactivé : ' . $user->pseudo . ' (rôle : ' . $user->role . ')');
+            $msg = 'Compte mis en stand-by. L\'utilisateur ne peut plus se connecter.';
+        }
 
         return back()->with('status', $msg);
     }
@@ -105,6 +109,7 @@ class AdminController extends Controller
             return back()->with('error', 'Impossible de supprimer un administrateur.');
         }
 
+        LogActivite::enregistrer('suppression_utilisateur', 'Compte supprimé : ' . $user->pseudo . ' (rôle : ' . $user->role . ')');
         $user->delete();
         return back()->with('status', 'Utilisateur supprimé définitivement.');
     }
@@ -135,6 +140,7 @@ class AdminController extends Controller
         $photo->est_validee = true;
         $photo->save();
 
+        LogActivite::enregistrer('validation_photo', 'Photo validée : "' . $photo->description . '" (ID : ' . $photo->id_photo . ')');
         return back()->with('status', 'Photo validée et publiée dans le catalogue.');
     }
 
@@ -150,6 +156,7 @@ class AdminController extends Controller
         $photo->est_validee = false;
         $photo->save();
 
+        LogActivite::enregistrer('refus_photo', 'Photo refusée : "' . $photo->description . '" (ID : ' . $photo->id_photo . ')');
         return back()->with('status', 'Photo refusée et retirée du catalogue.');
     }
 
@@ -176,6 +183,7 @@ class AdminController extends Controller
             unlink($wm);
         }
 
+        LogActivite::enregistrer('suppression_photo_admin', 'Photo supprimée par admin : "' . $photo->description . '" (ID : ' . $photo->id_photo . ')');
         $photo->delete();
         return back()->with('status', 'Photo supprimée définitivement.');
     }
@@ -212,6 +220,7 @@ class AdminController extends Controller
             'description' => $request->description,
         ]);
 
+        LogActivite::enregistrer('ajout_categorie', 'Catégorie créée : "' . $request->libelle . '"');
         return back()->with('status', 'Catégorie "' . $request->libelle . '" ajoutée avec succès.');
     }
 
@@ -254,6 +263,7 @@ class AdminController extends Controller
             return back()->with('error', 'Impossible de supprimer une catégorie qui contient des photos.');
         }
 
+        LogActivite::enregistrer('suppression_categorie', 'Catégorie supprimée : "' . $cat->libelle . '"');
         $cat->delete();
         return back()->with('status', 'Catégorie supprimée.');
     }

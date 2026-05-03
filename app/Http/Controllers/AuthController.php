@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogActivite;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -60,10 +61,12 @@ class AuthController extends Controller
         $user = User::where('pseudo', $request->pseudo)->first();
 
         if (!$user) {
+            LogActivite::enregistrer('tentative_connexion', 'Pseudo inconnu : ' . $request->pseudo, null);
             return back()->withErrors(['pseudo' => 'Pseudo introuvable.'])->onlyInput('pseudo');
         }
 
         if (!$user->actif) {
+            LogActivite::enregistrer('tentative_connexion', 'Compte désactivé : ' . $user->pseudo, $user->id_utilisateur);
             return back()->withErrors(['pseudo' => 'Ce compte est désactivé. Contactez un administrateur.'])->onlyInput('pseudo');
         }
 
@@ -72,9 +75,11 @@ class AuthController extends Controller
             $request->boolean('remember')
         )) {
             $request->session()->regenerate();
+            LogActivite::enregistrer('connexion', 'Connexion réussie — rôle : ' . $user->role);
             return $this->redirectByRole();
         }
 
+        LogActivite::enregistrer('tentative_connexion', 'Mot de passe incorrect pour : ' . $user->pseudo, $user->id_utilisateur);
         return back()->withErrors(['pseudo' => 'Pseudo ou mot de passe incorrect.'])->onlyInput('pseudo');
     }
 
@@ -163,6 +168,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request): RedirectResponse
     {
+        LogActivite::enregistrer('deconnexion', 'Déconnexion : ' . Auth::user()->pseudo);
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

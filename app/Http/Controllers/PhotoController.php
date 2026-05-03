@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogActivite;
 use App\Models\Photo;
 use App\Models\Categorie;
 use App\Models\Commande;
@@ -244,6 +245,7 @@ class PhotoController extends Controller
 
         $extension = pathinfo($photo->nom_fichier, PATHINFO_EXTENSION);
 
+        LogActivite::enregistrer('telechargement_photo', 'Téléchargement original : "' . $photo->description . '" (ID : ' . $photo->id_photo . ')');
         return response()->download($filePath, $photo->description . '_original.' . $extension);
     }
 }

@@ -41,7 +41,7 @@ function queryPhotos()
         ->orderBy('photo.date_depot', 'desc');
 }
 
-// ── ROUTE PUBLIQUE : test de connexion (sans clé API) ─────────────────
+// ── ROUTE PUBLIQUE : test de connexion (sans clé API)
 Route::get('/test', function () {
     return response()->json(['statut' => 'ok', 'message' => 'API PhotoForYou opérationnelle']);
 });
@@ -415,4 +415,56 @@ Route::delete('/admin/categories/{id}', function (Request $request, $id) {
 
     DB::table('categorie')->where('id_categorie', $id)->delete();
     return response()->json(['statut' => 'ok']);
+});
+
+// ── Admin : statistiques globales (tableau de bord) ───────────────────
+Route::get('/admin/tableau-de-bord', function (Request $request) {
+    if ($request->header('X-API-KEY') !== CLE_API)
+        return response()->json(['erreur' => 'Clé API invalide'], 401);
+
+    $adminId = $request->query('admin_id');
+    if (!DB::table('utilisateur')->where('id_utilisateur', $adminId)->where('role', 'admin')->exists())
+        return response()->json(['erreur' => 'Accès réservé aux administrateurs'], 403);
+
+    return response()->json([
+        'total_utilisateurs'  => DB::table('utilisateur')->count(),
+        'photographes_actifs' => DB::table('utilisateur')->where('role', 'photographe')->where('actif', 1)->count(),
+        'total_photos'        => DB::table('photo')->count(),
+        'photos_en_vente'     => DB::table('photo')->where('est_validee', 1)->where('en_vente', 1)->count(),
+        'photos_en_attente'   => DB::table('photo')->where('est_validee', 0)->count(),
+        'total_ventes'        => DB::table('commande')->count(),
+        'ventes_mois'         => DB::table('commande')
+                                    ->whereYear('date_achat', now()->year)
+                                    ->whereMonth('date_achat', now()->month)
+                                    ->count(),
+        'credits_circulation' => (int) DB::table('utilisateur')->sum('credits'),
+    ]);
+});
+
+// ── Admin : historique de toutes les transactions ─────────────────────
+Route::get('/admin/transactions', function (Request $request) {
+    if ($request->header('X-API-KEY') !== CLE_API)
+        return response()->json(['erreur' => 'Clé API invalide'], 401);
+
+    $adminId = $request->query('admin_id');
+    if (!DB::table('utilisateur')->where('id_utilisateur', $adminId)->where('role', 'admin')->exists())
+        return response()->json(['erreur' => 'Accès réservé aux administrateurs'], 403);
+
+    $transactions = DB::table('commande')
+        ->join('photo',                  'commande.id_photo',      '=', 'photo.id_photo')
+        ->leftJoin('utilisateur as u_ph', 'photo.id_utilisateur',  '=', 'u_ph.id_utilisateur')
+        ->leftJoin('utilisateur as u_ac', 'commande.id_acheteur',  '=', 'u_ac.id_utilisateur')
+        ->select([
+            'commande.id_commande       as id',
+            'commande.date_achat',
+            'photo.description          as photo_description',
+            'u_ph.pseudo                as photographe',
+            'u_ac.pseudo                as acheteur',
+            'commande.credits_debites',
+            'commande.credits_photographe',
+        ])
+        ->orderBy('commande.date_achat', 'desc')
+        ->get();
+
+    return response()->json($transactions);
 });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogActivite;
 use App\Models\Photo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -96,9 +97,11 @@ class EspacePhotographeController extends Controller
             ->where('id_utilisateur', Auth::id())
             ->firstOrFail();
 
+        $ancienPrix  = $photo->prix;
         $photo->prix = $request->prix;
         $photo->save();
 
+        LogActivite::enregistrer('modification_prix', 'Prix modifié : "' . $photo->description . '" — ' . $ancienPrix . ' → ' . $request->prix . ' crédit(s)');
         return back()->with('status', 'Prix mis à jour avec succès.');
     }
 
@@ -132,6 +135,7 @@ class EspacePhotographeController extends Controller
         $user->credits = 0;
         $user->save();
 
+        LogActivite::enregistrer('demande_paiement', 'Demande de paiement : ' . $montant . ' € par ' . $request->moyen);
         return back()->with('status',
             "Demande de paiement de {$montant} € par {$request->moyen} enregistrée. Vous serez contacté(e) sous 48h."
         );

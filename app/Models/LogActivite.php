@@ -39,6 +39,22 @@ class LogActivite extends Model
     }
 
     /**
+     * Enregistre une entrée dans le journal d'activité.
+     *
+     * @param  string    $typeAction     Ex : 'connexion', 'validation_photo'
+     * @param  string    $description    Description lisible de l'action
+     * @param  int|null  $idUtilisateur  Laissé null pour utiliser l'utilisateur connecté
+     */
+    public static function enregistrer(string $typeAction, string $description, ?int $idUtilisateur = null): void
+    {
+        static::create([
+            'id_utilisateur' => $idUtilisateur ?? \Illuminate\Support\Facades\Auth::id(),
+            'type_action'    => $typeAction,
+            'description'    => $description,
+        ]);
+    }
+
+    /**
      * L'utilisateur associé à cette entrée de journal.
      * Peut être null si l'utilisateur a été supprimé.
      */
