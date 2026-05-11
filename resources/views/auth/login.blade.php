@@ -55,34 +55,6 @@
                 </p>
             </div>
         </div>
-
-        <div class="card mt-3 border-info">
-            <div class="card-header bg-info bg-opacity-10 text-info fw-semibold small">
-                <i class="bi bi-info-circle"></i> Comptes de démonstration
-            </div>
-            <div class="card-body py-2 small">
-                <table class="table table-sm mb-0">
-                    <thead><tr><th>Rôle</th><th>Pseudo</th><th>Mot de passe</th></tr></thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="badge bg-danger">Admin</span></td>
-                            <td><code>superadmin</code></td>
-                            <td><code>Admin@1234</code></td>
-                        </tr>
-                        <tr>
-                            <td><span class="badge bg-success">Photographe</span></td>
-                            <td><code>flippo_photo</code></td>
-                            <td><code>Photo@1234</code></td>
-                        </tr>
-                        <tr>
-                            <td><span class="badge bg-primary">Client</span></td>
-                            <td><code>marie_d</code></td>
-                            <td><code>Client@1234</code></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 </div>
 

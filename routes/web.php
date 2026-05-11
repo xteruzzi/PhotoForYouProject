@@ -32,7 +32,7 @@ Route::get('/photographe/{id}', function (int $id) {
         ->where('en_vente', true)
         ->paginate(12);
     return view('profil-photographe', compact('photographe', 'photos'));
-})->name('profil.photographe');
+})->name('profil.photographe')->where('id', '[0-9]+');
 
 // ── Authentification ──────────────────────────────────────────────────────────
 // throttle:5,1 = 5 tentatives maximum par minute par IP (anti brute-force)
